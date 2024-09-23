@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0001_create_currency_table
+      author: vadzim
+      changes:
+        - createTable:
+            tableName: currency
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: code
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addUniqueConstraint:
+            columnNames: code
+            tableName: currency
+            constraintName: uk_currency_code
+        - createIndex:
+            tableName: currency
+            columns:
+              - column:
+                  name: code
+            indexName: idx_currency_code
+
+  - changeSet:
+      id: 0002_create_exchange_rate_table
+      author: vadzim
+      changes:
+        - createTable:
+            tableName: exchange_rate
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: currency_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rates
+                  type: JSONB
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addForeignKeyConstraint:
+            baseTableName: exchange_rate
+            baseColumnNames: currency_id
+            constraintName: fk_exchange_rate_currency
+            referencedTableName: currency
+            referencedColumnNames: id
